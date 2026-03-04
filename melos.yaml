@@ -1,0 +1,22 @@
+name: sasi_workspace
+
+packages:
+  - apps/**
+  - packages/**
+
+scripts:
+  get:
+    run: melos exec -- flutter pub get
+    description: Get dependencies for all packages
+
+  test:all:
+    run: melos exec -- flutter test
+    description: Run tests for all packages
+
+  analyze:
+    run: melos exec -- flutter analyze
+    description: Analyze all packages
+
+  format:
+    run: melos exec -- dart format lib test
+    description: Format all packages
