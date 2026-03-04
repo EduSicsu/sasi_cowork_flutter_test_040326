@@ -1,0 +1,50 @@
+---
+description: Auto-generate README.md inside feature modules at the end of a plan
+alwaysApply: true
+---
+
+# Feature Documentation
+
+At the end of executing a plan that creates or significantly modifies a feature module, create a `README.md` inside the feature folder.
+
+## When to Create
+
+Create the README when the plan creates or touches files inside `app/features/<feature>/`.
+
+## File Location
+
+`app/features/<feature>/README.md`
+
+## Required Sections
+
+```markdown
+# <Feature Name>
+
+## Responsibility
+One paragraph describing what this feature does and its role in the app.
+
+## Structure
+List of key files and what each one does:
+- `<feature>_page.dart` — ...
+- `cubit/<feature>_cubit.dart` — ...
+- `cubit/<feature>_state.dart` — ...
+- `widgets/` — ...
+
+## Dependencies
+List of domain services this feature depends on:
+- `ServiceName` — why it's used
+
+## Routes
+- Route name and path
+```
+
+## When to Update
+
+If a `README.md` already exists inside the feature folder being modified, **update it** instead of creating a new one. This applies whenever a plan touches files inside an existing `app/features/<feature>/`.
+
+## Rules
+
+- Keep it concise — no more than 60 lines
+- Write in the same language as the project's existing documentation
+- When creating: commit as `docs: add README for <feature> feature`
+- When updating: commit as `docs: update <feature> README with <summary of changes>`

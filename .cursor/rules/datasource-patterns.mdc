@@ -1,0 +1,37 @@
+---
+description: DataSource and Model patterns — remote/local, Model ↔ Entity, lists
+globs: ["**/data/datasources/**/*.dart", "**/data/models/**/*.dart"]
+alwaysApply: false
+---
+
+# DataSource and Model — Project Patterns
+
+> For general architecture, see `.cursorrules`. For feature creation, see `.cursor/rules/feature-creation-process.mdc`.
+
+---
+
+## DataSource
+
+- **Where**: interface + impl in `data/datasources/remote/` or `data/datasources/local/`.
+- **Remote**: receives `ApiClient`; methods return Models or DTOs (never Entities). Request/Response with `fromJson`/`toJson`.
+- **Local**: receives `CacheClient` or storage adapter; read/write in the appropriate format.
+- **Naming**: `*DataSource` (interface), `*DataSourceImpl` or `*RemoteDataSource`/`*LocalDataSource` + Impl.
+- DataSource does not know Entity; it returns only Model. Conversion to Entity (incl. lists via `toEntities()`) stays in the Service.
+
+---
+
+## Model
+
+- **Responsibility**: all model ↔ entity mapping. Implement `fromJson`, `toJson`, `toEntity()`, `fromEntity()` (or factory).
+- **Type**: `final class` when possible. Request only needs `toJson` when sending; Response/persisted entity: `fromJson`, `toEntity`, `fromEntity`.
+- **Lists (mandatory rule)**:
+  - `List<Model> → List<Entity>`: create extension on `List<MyModel>` with `toEntities()`. In the Service always use `models.toEntities()`, never `map((m) => m.toEntity()).toList()`.
+  - `List<Entity> → List<Model>`: create `static List<MyModel> fromEntityList(List<MyEntity> entities)` on the Model (or extension on `List<Entity>`). Always use this method/extension.
+
+---
+
+## Testing (DataSource)
+
+- **Remote**: mock `ApiClient`. In `setUpAll()`: `TestWidgetsFlutterBinding.ensureInitialized()` and load JSON with `loadJsonAsset('filename.json')` (helper in `test_helpers/`). Stub: `when(() => apiClient.post(path: path, data: request.toJson())).thenAnswer((_) async => ApiResponse(data: loadedJson))`. Request should come from a fixture (e.g. `authRequest`); use the same in `when` and `verify`. Assert on result fields by comparing with the loaded JSON.
+- **Exceptions**: in rethrow tests, use the same request in `when()` as the code under test (e.g. `data: authRequest.toJson()`), not `any()`.
+- Full examples: `test/data/datasources/remote/auth_remote_data_source_test.dart` and `.cursor/rules/test-practices-examples.mdc`.

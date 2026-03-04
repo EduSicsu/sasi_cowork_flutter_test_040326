@@ -1,0 +1,76 @@
+---
+description: Full feature creation process — checklist domain → data → app → config
+alwaysApply: false
+---
+
+# Feature Creation Process
+
+> For general architecture rules, see `.cursorrules`. For Service, DataSource, and Cubit/State patterns, see the layer rules in `.cursor/rules/`.
+
+---
+
+## Checklist (order)
+
+1. **Domain**: Entity + Service (interface + impl in `domain/services/`).
+2. **Data**: Model(s) with list extensions + DataSource(s) in `data/datasources/remote/` or `local/`.
+3. **App**: Page with `routeName` and static navigation methods (e.g. `navigate`, `replace`), Cubit, State, barrels (`cubit.dart`, `<feature>.dart`).
+4. **Config**: Register DataSources and Services in `service_locator.dart`; register route in `route_generator.dart`.
+5. **README**: Create or update `app/features/<feature>/README.md` (Responsibility, Structure, Dependencies, Routes).
+
+---
+
+## 1. Domain
+
+- **Entity** (`lib/domain/entities/`): immutable, Equatable, `final` fields, `const` constructor.
+- **Service** (`lib/domain/services/`): abstract interface + implementation in the same package. The impl receives DataSources in the constructor. See `.cursor/rules/service-patterns.mdc` for details and lists (`toEntities()`).
+
+---
+
+## 2. Data
+
+- **Model** (`lib/data/models/`): responsible for model ↔ entity mapping. Implement `fromJson`, `toJson`, `toEntity()`, `fromEntity()`. For lists: create extension `List<MyModel>.toEntities()` and, if needed, `MyModel.fromEntityList(List<MyEntity>)`; never use `map((m) => m.toEntity()).toList()` in the Service. See `.cursor/rules/datasource-patterns.mdc`.
+- **DataSource** (`lib/data/datasources/remote/` or `local/`): interface + impl; returns only Models. See `.cursor/rules/datasource-patterns.mdc`.
+
+---
+
+## 3. App (feature)
+
+**Navigation:** We use **Navigator** (v1) **temporarily**; migration to GoRouter is planned. Keep the implementation as close as possible to the GoRouter approach (e.g. one `routeName` per page, static navigation methods on the page, centralized route map) to ease the future migration.
+
+Structure under `lib/app/features/<feature>/`:
+
+| File | Responsibility |
+|------|----------------|
+| `<feature>_page.dart` | Page with `routeName`, static `build(BuildContext context, {Object? arguments})` (BlocProvider + Cubit), and static navigation methods (e.g. `navigate`, `replace`) |
+| `cubit/<feature>_cubit.dart` | Cubit with injected Services |
+| `cubit/<feature>_state.dart` | Immutable State, Equatable; for async flows use sealed classes — see `.cursor/rules/cubit-state-patterns.mdc` |
+| `cubit/cubit.dart` | Barrel: export cubit + state |
+| `<feature>.dart` | Barrel: export page + cubit (for routes) |
+| `widgets/` | (optional) Feature widgets |
+
+**Route:** `static get routeName => '/path';` (or `const routeName`), `static Widget build(BuildContext context, {Object? arguments})` that creates the Cubit (e.g. via `getIt()`) and returns `BlocProvider(create: (_) => cubit, child: const FeaturePage())`, and static methods such as `static void navigate(BuildContext context)` and `static void replace(BuildContext context)` using `Navigator.of(context).pushNamed(routeName)`, `pushReplacementNamed`, or `pushNamedAndRemoveUntil` as appropriate.
+
+---
+
+## 4. Config
+
+- **Service Locator** (`app/config/dependencies/service_locator.dart`): `registerLazySingleton` for DataSources and Services. Order: infra → DataSources → Services.
+- **Routes** (`app/config/routes/routes_generator.dart`): import the feature and add `FeaturePage.routeName: (context) => FeaturePage.build(context, arguments: setting.arguments)` to the map returned by `RoutesGenerator.getRoutes`. The page's static `build` owns Cubit creation and BlocProvider. Keep this pattern aligned with what would be used with GoRouter.
+
+---
+
+## 5. Navigation
+
+- Use `FeaturePage.navigate(context)` or `FeaturePage.replace(context)` (or another static method on the page) depending on the flow; use `pushNamed` when you need to return.
+
+---
+
+## Naming conventions
+
+| Component | Pattern | Example |
+|-----------|---------|---------|
+| Entity | `*Entity` | `AdminUserEntity` |
+| Model | `*Model` | `AdminUserModel` |
+| Service | `*Service` / `*ServiceImpl` | `AuthService` |
+| DataSource | `*DataSource` / `*DataSourceImpl` | `AuthRemoteDataSource` |
+| Cubit / State | `*Cubit` / `*State` | `LoginCubit` / `LoginState` |

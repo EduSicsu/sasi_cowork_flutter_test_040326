@@ -1,0 +1,26 @@
+---
+description: Project identity and external integrations context
+alwaysApply: true
+---
+
+# Project Context
+
+## GitHub
+
+- **Organization/Owner**: `iggtech`
+- **Repository**: `iggtech/oka-mobile-app`
+- **Default base branch**: `develop`
+
+When performing GitHub operations (creating PRs, listing issues, fetching files, etc.), always use `owner: iggtech` and `repo: oka-mobile-app` unless the user explicitly specifies otherwise.
+
+## Linear
+
+- **Workspace**: `Oka`
+- **Team**: `Oka`
+
+When creating or updating Linear issues, always use team `Oka` unless the user explicitly specifies otherwise.
+
+## Cursor Workspace
+
+- **Local path**: `/Users/igorguerra/oka/oka_workspace`
+- **Git repo root**: `/Users/igorguerra/oka/oka_workspace`

@@ -1,0 +1,53 @@
+---
+description: Git workflow for plan execution — create Linear issue, create branch per plan and commit after each step
+alwaysApply: true
+---
+
+# Plan Git Workflow
+
+When executing a plan (confirmed by the user), follow this git workflow:
+
+## Before Starting
+
+1. **Create a Linear issue** with the plan title and full plan description as the issue body:
+   - Use team `Oka`
+   - Add the plan content (all steps) as the issue `description`
+   - Set status to `In Progress` immediately when creating
+   - Note the generated identifier (e.g. `OKA-12`) — it will be used in the branch name
+2. Check the current branch with `git branch --show-current`
+3. Create and checkout a new branch named after the Linear issue:
+   - Format: `<type>/OKA-<number>` — use only the card number (no description in the branch name)
+   - Example: issue OKA-12 → `feature/OKA-12`
+4. Confirm the branch was created before proceeding
+
+## After Each Completed Todo Step
+
+Immediately after marking a todo as completed, create a git commit:
+
+1. Stage only the files changed in that step: `git add <files>`
+2. Commit with a descriptive message following the **Conventional Commits** standard (see `conventional-commits.mdc`):
+   - Use the appropriate type: `feat`, `fix`, `refactor`, `docs`, `chore`, etc.
+   - Example: `feat: add condominiumName to UserAddressEntity and model`
+3. Never commit unrelated files together
+
+## After All Todos Completed
+
+When all todo steps are done:
+
+1. **Run the test suite** before opening the PR: run the project tests (e.g. `flutter test` at the root or in the changed packages) and ensure all pass. Fix any failures before proceeding.
+2. Push the branch to remote: `git push -u origin <branch>`
+3. **Open the PR** via GitHub MCP with:
+   - **Title**: `[OKA-<number>][<TYPE>] - <plan title>`
+     - Type in uppercase based on the branch prefix: `FEATURE`, `FIX`, `HOTFIX`, `CHORE`, etc.
+     - Example: `[OKA-12][FEATURE] - Gate Release Module`
+   - **Base branch**: `develop`
+   - **Description**: link to the Linear issue + summary of commits made
+4. Update the Linear issue status to `In Review`
+
+## Rules
+
+- NEVER commit all files at once at the end — one commit per todo step
+- NEVER push to remote before all todos are completed
+- Always run the test suite at the end of plan execution (before opening the PR) and fix any failures
+- If a step has no file changes (e.g. research only), skip the commit
+- Keep commit messages in the same language as the plan

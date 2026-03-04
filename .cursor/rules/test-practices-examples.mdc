@@ -1,0 +1,84 @@
+---
+description: Test practices and examples (service, cubit, datasource)
+globs: "**/test/**/*_test.dart"
+alwaysApply: false
+---
+
+# Test practices and examples
+
+## Testing a service (domain)
+
+- **Mocks**: One mock class per dependency (e.g. `MockAuthRemoteDataSource extends Mock implements AuthRemoteDataSource`). Instantiate in `setUp()` and inject into the real service implementation.
+- **Fixtures for entities**: Do not build entities or request/response objects inline. Import from the barrel `test/fixtures/fixtures.dart`. Use the exported names so all tests share the same definitions; add variants in the fixture file (e.g. `invalidUserModel`) when needed.
+- **Fixture naming**: Use clear, scenario-based names: `validUserModel`, `invalidUserModel` for entities; `authRequest`, `authResponse`, `refreshRequest`, `changePasswordRequest` for auth. The name should indicate what the fixture represents (valid/invalid, or the DTO role).
+- **Exact values over `any()`**: Prefer passing the same request/response values in both `when()` and `verify()` so the check is exact. Get those values from fixtures (or local constants that match the fixture). Use `any()` only when the argument is irrelevant and you cannot easily construct a value.
+- **Equatable**: Request/response or entity types used in `when()`/`verify()` should extend `Equatable` (and implement `props`) so mocktail matches by value, not reference.
+- **Stub**: Use `when(() => mock.method(request: authRequest)).thenAnswer((_) async => value)` with the exact argument the code under test will pass.
+- **Verify**: Use `verify(() => mock.method(request: authRequest)).called(1)` with the same value. Use `verifyInOrder([...])` when order matters.
+- **Streams**: To assert that a stream emitted (e.g. `authChanged`), subscribe before the action (e.g. `final future = service.authChanged.first`) and `await future` after the action.
+
+Example shape (see `test/domain/services/auth_service_test.dart`). Import fixtures and use them in when/verify:
+
+```dart
+import '../../fixtures/fixtures.dart';
+
+setUp(() {
+  authRemote = MockAuthRemoteDataSource();
+  service = AuthServiceImpl(authRemoteDataSource: authRemote, ...);
+});
+test('returns Success when remote succeeds', () async {
+  when(() => authRemote.authenticate(request: authRequest))
+      .thenAnswer((_) async => authResponse);
+  when(() => userLocal.saveUser(user: validUserModel)).thenAnswer((_) async {});
+  final result = await service.authenticate(email: authRequest.email, password: authRequest.password);
+  expect(result, isA<Success<void>>());
+  verify(() => authRemote.authenticate(request: authRequest)).called(1);
+  verify(() => userLocal.saveUser(user: validUserModel)).called(1);
+});
+```
+
+## Testing a Cubit
+
+- **Mocks**: Mock the service(s) the Cubit depends on (e.g. `MockAuthService`). Do **not** use the real service.
+- **blocTest**: Use `blocTest<MyCubit, MyState>` from `bloc_test` for flows that change state:
+  - **build**: Return a new Cubit with stubbed dependencies. Stub inside build so each test can define its own when/thenAnswer.
+  - **act**: Call the method that triggers the flow. Use values from fixtures (e.g. `authRequest.email`, `authRequest.password`) so when/act/verify stay in sync.
+  - **expect**: List of state matchers in order (e.g. `[isA<LoginLoading>(), isA<LoginSuccess>()]`). Do not include initial state unless the test is about it.
+  - **verify**: Optional callback to verify mock calls with the same fixture values used in act.
+- **Initial state**: Use a plain `test('initial state is X', () => expect(cubit.state, isA<Initial>()));` when you only need to assert the initial state.
+
+Example shape (see `test/app/features/login/cubit/login_cubit_test.dart`). Import fixtures and use exact values in when/act/verify:
+
+```dart
+import '../../../../fixtures/fixtures.dart';
+
+blocTest<LoginCubit, LoginState>(
+  'emits [LoginLoading, LoginSuccess] when authenticate returns Success',
+  build: () {
+    when(() => authService.authenticate(
+          email: authRequest.email,
+          password: authRequest.password,
+        )).thenAnswer((_) async => const Success(null));
+    return LoginCubit(authService: authService);
+  },
+  act: (cubit) => cubit.authenticate(
+    email: authRequest.email,
+    password: authRequest.password,
+  ),
+  expect: () => [isA<LoginLoading>(), isA<LoginSuccess>()],
+  verify: (_) => verify(() => authService.authenticate(
+    email: authRequest.email,
+    password: authRequest.password,
+  )).called(1),
+);
+```
+
+## Testing a datasource (remote, with JSON)
+
+- **Assets**: In `setUpAll()`, call `TestWidgetsFlutterBinding.ensureInitialized()` then load JSON with `loadJsonAsset('filename.json')` from `test_helpers`. Use the returned map as the response body when stubbing the HTTP client.
+- **Requests from fixtures**: Do not build request objects (AuthRequest, RefreshRequest, RegisterRequest, ChangePasswordRequest) inline. Import from `test/fixtures/fixtures.dart` and use the exported fixtures (e.g. `authRequest`, `registerRequest`) in both `when()` and `verify()`.
+- **Stub**: `when(() => apiClient.post(path: path, data: request.toJson())).thenAnswer((_) async => ApiResponse(data: loadedJson))` with the exact request from the fixture.
+- **Assert**: Compare parsed result fields to values from the loaded JSON (e.g. `expect(result.accessToken, authResponseJson['accessToken'])`) so the test stays in sync with the asset file.
+- **Rethrows / exception tests**: Use the same request and data in `when()` as the code under test (e.g. `data: authRequest.toJson()`), not `any()`, so the stub is precise. Example: `when(() => apiClient.post(path: loginPath, data: authRequest.toJson())).thenThrow(exception)`.
+
+Reference: `test/data/datasources/remote/auth_remote_data_source_test.dart`.

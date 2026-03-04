@@ -1,0 +1,88 @@
+---
+description: Cubit and State patterns for Flutter — sealed classes for async flows and when to split cubits
+globs: "**/cubit/**/*.dart"
+alwaysApply: false
+---
+
+# Cubit and State — Project Patterns
+
+> For general architecture rules (layers, dependencies, naming), see `.cursorrules`.
+
+---
+
+## Async flows in State — use sealed classes
+
+When a State manages async operations (load, submit), model each flow as a sealed class instead of `bool loading + bool failure`.
+
+**Why:** sealed classes remove invalid boolean combinations and force exhaustive handling in the widget via pattern matching.
+
+```dart
+// ✅ BOM
+sealed class AddressesFlow extends Equatable { const AddressesFlow(); }
+final class AddressesFlowLoading extends AddressesFlow {
+  @override List<Object?> get props => [];
+}
+final class AddressesFlowLoaded extends AddressesFlow {
+  final List<AddressEntity> addresses;
+  const AddressesFlowLoaded(this.addresses);
+  @override List<Object?> get props => [addresses];
+}
+final class AddressesFlowError extends AddressesFlow {
+  final String message;
+  const AddressesFlowError(this.message);
+  @override List<Object?> get props => [message];
+}
+
+// ❌ BAD — allows loading: true and failure: true at the same time
+bool loadingAddresses;
+bool failureAddresses;
+String? errorMessage;
+```
+
+### Sealed class rules
+
+- The sealed base extends `Equatable`
+- Each subclass implements `props` with its own data
+- Subclasses with no data: `props => []`
+- Default prefix: `<FlowName>Loading`, `<FlowName>Loaded`, `<FlowName>Error`
+- Add `<FlowName>Initial` or `<FlowName>Idle` when the flow has a neutral initial state
+
+### In the widget, use exhaustive pattern matching
+
+```dart
+switch (state.addressesFlow) {
+  AddressesFlowLoading()              => CircularProgressIndicator(),
+  AddressesFlowError(:final message)  => _RetryView(message),
+  AddressesFlowLoaded(:final addresses) => _AddressDropdown(addresses),
+  AddressesFlowInitial()              => SizedBox.shrink(),
+}
+```
+
+---
+
+## When to split cubits
+
+**Keep a single cubit** when:
+- State changes are causally chained (A triggers B triggers C)
+- All state serves a single transaction or user flow
+- Splitting would require one cubit listening to another via `BlocListener` in the widget
+
+**Split into separate cubits** when:
+- Each cubit’s state is genuinely independent (one can exist without the other)
+- The widget/logic can be reused in another feature without change
+- There is no cross-reaction between the cubits
+
+> Warning: if you need `BlocListener<CubitA>` to trigger an action on `CubitB`, the state is coupled and belongs in a single cubit.
+
+---
+
+## Testing
+
+- **Mocks**: Mock the Service(s) the Cubit depends on (e.g. `MockAuthService`). Do not use the real service.
+- **blocTest**: Use `blocTest<MyCubit, MyState>` from `bloc_test` for flows that change state:
+  - **build**: Return a new Cubit with mocked dependencies. Do `when()` inside build so each test can define its own stub.
+  - **act**: Call the method that triggers the flow. Use values from fixtures (e.g. `authRequest.email`, `authRequest.password`) to keep when/act/verify in sync.
+  - **expect**: List of state matchers in order (e.g. `[isA<LoginLoading>(), isA<LoginSuccess>()]`). Do not include initial state unless the test is about it.
+  - **verify**: Optional; verify mock calls with the same values as in act.
+- **Initial state**: Use `test('initial state is X', () => expect(cubit.state, isA<Initial>()));` when you only need to assert the initial state.
+- Full examples: `test/app/features/login/cubit/login_cubit_test.dart` and `.cursor/rules/test-practices-examples.mdc`.

@@ -1,0 +1,32 @@
+---
+description: General test standards (conventions, assets vs fixtures, structure)
+globs: "**/test/**/*_test.dart"
+alwaysApply: false
+---
+
+# Test Standards
+
+## Language and structure
+
+- **Descriptions**: All `test()` and `group()` descriptions must be in **English**.
+- **Layout**: Mirror lib layout under `test/`: e.g. `lib/domain/services/` → `test/domain/services/`, `lib/app/features/login/cubit/` → `test/app/features/login/cubit/`.
+
+## JSON vs entities
+
+- **Need to return/mock JSON** (e.g. API response body): use **assets**. Put `.json` files in `packages/oka_mobile_lib/assets/jsons/` and load them in tests via the helper (e.g. `loadJsonAsset('auth_response.json')`). Use for datasource tests that stub HTTP responses.
+- **Need an entity or model instance** (valid, invalid, or any scenario): use **fixtures**. Put Dart code in `test/fixtures/` that build and export named instances. Import via the barrel `test/fixtures/fixtures.dart`; do not build these objects inline in the test file.
+- **Fixture naming**: Name exports so the scenario is clear: `validUserModel`, `invalidUserModel`, `authRequest`, `authResponse`, `refreshRequest`, `registerRequest`, `changePasswordRequest`. Use a consistent prefix or suffix per type (e.g. valid/invalid for entities, or the role: `authRequest`, `authResponse`).
+
+## Dependencies
+
+- **mocktail**: for mocks (implement interfaces with `extends Mock implements X`).
+- **bloc_test**: for Cubit/Bloc tests (`blocTest` with build/act/expect/verify).
+- **flutter_test**: use when tests need Flutter binding (e.g. loading assets with `TestWidgetsFlutterBinding.ensureInitialized()`).
+
+## Rules of thumb
+
+- One test file per production file (e.g. `auth_service.dart` → `auth_service_test.dart`).
+- Use fixtures for entities and request/response objects: import from `test/fixtures/` and do not construct them inline in the test file.
+- Prefer **exact values** in `when()` and `verify()` over `any()` so checks are precise; use `any()` only when the argument is irrelevant. Types used in verify should extend `Equatable` so value equality works.
+- In tests that assert **rethrows** or exception paths, use the same request/data in `when()` as the code under test (e.g. `data: authRequest.toJson()`), not `any()`, so the stub matches the real call.
+- When you do use mocktail `any()` with custom types, register fallbacks in `setUpAll` with `registerFallbackValue(MyType(...))`.

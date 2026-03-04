@@ -1,0 +1,65 @@
+---
+description: Enforce Conventional Commits format for all git commit messages
+alwaysApply: true
+---
+
+# Conventional Commits
+
+All commit messages MUST follow the [Conventional Commits](https://www.conventionalcommits.org/) specification.
+
+## Format
+
+```
+<type>(<scope>): <description>
+
+[optional body]
+
+[optional footer]
+```
+
+## Types
+
+| Type | When to use |
+|------|-------------|
+| `feat` | New feature or behavior |
+| `fix` | Bug fix |
+| `refactor` | Code change that neither fixes a bug nor adds a feature |
+| `style` | Formatting, missing semicolons, etc. (no logic change) |
+| `test` | Adding or updating tests |
+| `docs` | Documentation only changes |
+| `chore` | Build process, dependency updates, tooling |
+| `perf` | Performance improvements |
+| `ci` | CI/CD configuration changes |
+| `revert` | Reverts a previous commit |
+
+## Rules
+
+- Type and description are **mandatory**.
+- Scope is optional but recommended for clarity (e.g., `feat(auth): ...`).
+- Description must be lowercase and imperative mood: `add`, `fix`, `update` — not `added`, `fixes`, `updating`.
+- No period at the end of the description.
+- Breaking changes must include `BREAKING CHANGE:` in the footer or a `!` after the type: `feat!: rename login endpoint`.
+
+## Examples
+
+```
+feat(packages): add pickup creation flow
+fix(auth): handle expired token refresh
+refactor(cubit): simplify state emission logic
+docs: add README for create_pickup feature
+chore: update flutter dependencies
+```
+
+## Anti-patterns
+
+```
+# ❌ BAD
+git commit -m "fix bug"
+git commit -m "WIP"
+git commit -m "changes"
+git commit -m "Fixed the login issue."
+
+# ✅ GOOD
+git commit -m "fix(auth): resolve null pointer on login response"
+git commit -m "feat(packages): add package listing screen"
+```

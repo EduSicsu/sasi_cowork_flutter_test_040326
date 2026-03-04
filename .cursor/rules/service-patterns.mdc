@@ -1,0 +1,31 @@
+---
+description: Service (domain) patterns — interface/impl, Result, lists, errors
+globs: "**/domain/services/**/*.dart"
+alwaysApply: false
+---
+
+# Service — Project Patterns
+
+> For general architecture, see `.cursorrules`. For full feature creation, see `.cursor/rules/feature-creation-process.mdc`.
+
+---
+
+## Production
+
+- **Where**: abstract interface + implementation in `domain/services/` (same package).
+- **Dependencies**: the implementation receives only DataSources in the constructor. No UI/Flutter.
+- **Naming**: `*Service` (interface), `*ServiceImpl` (impl). One file can have both (e.g. `packages_service.dart`).
+- **Return**: use `Result<T>` (or equivalent). Handle exceptions in the service (e.g. `ApiException` → `AppError`); do not expose raw errors to the app.
+- **Persisted state** (session, tokens): Service is the source of truth; Cubit consults the Service, does not keep a copy.
+- **Lists**: never use `models.map((m) => m.toEntity()).toList()`. Always use the Model extension: `models.toEntities()`. If it does not exist, add it in the Model file (e.g. `extension ListUserModel on List<UserModel> { List<UserEntity> toEntities() => map((m) => m.toEntity()).toList(); }`).
+
+---
+
+## Testing
+
+- **Mocks**: one mock per service dependency (e.g. `MockAuthRemoteDataSource extends Mock implements AuthRemoteDataSource`). Instantiate in `setUp()` and inject into the real impl.
+- **Fixtures**: use entities and request/response from `test/fixtures/` (barrel `fixtures.dart`). Do not build objects inline.
+- **when/verify**: prefer exact values (from fixture) in `when()` and `verify()`. Types in verify should be Equatable for value equality.
+- **Result**: assert `expect(result, isA<Success<...>>())` or `isA<Failure<...>>()`; for Failure, assert on `error.type` or message per `AppError`.
+- **Streams**: if the service exposes a stream (e.g. `authChanged`), capture `service.authChanged.first` before the action and `await` after to ensure emission.
+- Full examples: `test/domain/services/auth_service_test.dart` and `.cursor/rules/test-practices-examples.mdc`.
