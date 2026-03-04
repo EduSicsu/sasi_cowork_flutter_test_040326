@@ -1,47 +1,9 @@
-name: sasi_cowork_flutter_test_040326
-description: SASI Design — Flutter screen development.
+name: sasi_workspace
+description: SASI Workspace — Melos monorepo root.
 publish_to: none
-version: 1.0.0+1
 
 environment:
   sdk: ">=3.3.0 <4.0.0"
 
-dependencies:
-  flutter:
-    sdk: flutter
-
-  # State Management
-  flutter_bloc: ^8.1.6
-  equatable: ^2.0.5
-
-  # Dependency Injection
-  get_it: ^7.7.0
-
-  # Networking
-  dio: ^5.4.3+1
-
-  # Local Storage
-  shared_preferences: ^2.3.2
-  flutter_secure_storage: ^9.2.2
-
-  # Navigation (v1 — GoRouter migration planned)
-  # Add go_router when ready: go_router: ^14.0.0
-
-  # Utilities
-  intl: ^0.19.0
-  uuid: ^4.4.2
-
-  # Accessibility (uncomment when package is available on pub.dev)
-  # flutter_semantics_helper: ^0.0.1
-
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  flutter_lints: ^4.0.0
-
-  # Testing
-  bloc_test: ^9.1.7
-  mocktail: ^1.0.4
-
-flutter:
-  uses-material-design: true
+  melos: ^6.1.0
