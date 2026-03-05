@@ -140,7 +140,7 @@ class _LoginFormState extends State<LoginForm> {
             ),
           ),
         ),
-        const SizedBox(height: AppTokens.spaceXxl),
+        const SizedBox(height: 75),
       ],
     );
   }
