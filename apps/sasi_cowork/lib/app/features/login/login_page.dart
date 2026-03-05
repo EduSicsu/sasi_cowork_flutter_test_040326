@@ -30,8 +30,8 @@ class LoginPage extends StatelessWidget {
     return BlocListener<LoginCubit, LoginState>(
       listener: _handleState,
       child: const Scaffold(
-        backgroundColor: Colors.white,
-        body: _LoginBody(),
+        backgroundColor: SumePrimitives.indigo10,
+        body: const _LoginBody(),
       ),
     );
   }
@@ -67,69 +67,71 @@ class _LoginBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-
     return Stack(
       children: [
-        // Background image — full screen, no overlap risk
-        Positioned.fill(
-          child: Image.asset(
-            'assets/images/login_background.png',
-            fit: BoxFit.cover,
-            alignment: Alignment.topCenter,
-          ),
-        ),
-        // Gradient: image visible at top, fully white from 55 % downward
-        Positioned.fill(
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                stops: const [0.30, 0.52, 1.0],
-                colors: const [
-                  Colors.transparent,
-                  Colors.white,
-                  Colors.white,
-                ],
-              ),
-            ),
-          ),
-        ),
-        // Scrollable content — sits on top of the white zone, never over the image
-        SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+        // Back layer: image + gradient (under the form)
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 396.0,
+          child: Stack(
+            fit: StackFit.expand,
             children: [
-              // Transparent spacer — lets the illustration show through
-              SizedBox(height: screenHeight * 0.44),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppTokens.spaceXxl,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      'Welcome to SASI System',
-                      style: Theme.of(context)
-                          .textTheme
-                          .headlineMedium
-                          ?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: AppTokens.spaceXs),
-                    Text(
-                      'Keep up to date with messages and alerts.',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: SumePrimitives.gray500,
-                          ),
-                    ),
-                    const SizedBox(height: AppTokens.spaceXxl),
-                    const LoginForm(),
-                  ],
+              Image.asset(
+                'assets/images/login_background.png',
+                fit: BoxFit.cover,
+                alignment: Alignment.topCenter,
+              ),
+              const DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    stops: [0.0, 0.74],
+                    colors: [
+                      Color(0x00F4F5FF),
+                      Color(0xFFF4F5FF),
+                    ],
+                  ),
                 ),
               ),
             ],
+          ),
+        ),
+        // Front layer: container with texts and buttons (on top of the stack above)
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: SingleChildScrollView(
+            padding: EdgeInsets.only(
+              left: AppTokens.spaceXxl,
+              right: AppTokens.spaceXxl,
+              bottom: MediaQuery.of(context).viewPadding.bottom + 24,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 396.0),
+                Text(
+                  'Welcome to SASI System',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                const SizedBox(height: AppTokens.spaceXs),
+                Text(
+                  'Keep up to date with messages and alerts.',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: SumePrimitives.gray500,
+                      ),
+                ),
+                const SizedBox(height: AppTokens.spaceXxl),
+                const LoginForm(),
+              ],
+            ),
           ),
         ),
       ],
