@@ -5,15 +5,15 @@ import '../../features/mfa_verification/mfa_verification_page.dart';
 
 class RoutesGenerator {
   static Map<String, WidgetBuilder> getRoutes() => {
-        LoginPage.routeName: (context) => LoginPage.build(
+        LoginPage.routeName: (context) => LoginPage.pageBuilder(
               context,
               arguments: ModalRoute.of(context)?.settings.arguments,
             ),
-        MfaVerificationPage.routeName: (context) => MfaVerificationPage.build(
+        MfaVerificationPage.routeName: (context) => MfaVerificationPage.pageBuilder(
               context,
               arguments: ModalRoute.of(context)?.settings.arguments,
             ),
-        HomePage.routeName: (context) => HomePage.build(
+        HomePage.routeName: (context) => HomePage.pageBuilder(
               context,
               arguments: ModalRoute.of(context)?.settings.arguments,
             ),

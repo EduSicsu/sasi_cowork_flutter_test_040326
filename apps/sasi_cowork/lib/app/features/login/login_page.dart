@@ -12,7 +12,7 @@ class LoginPage extends StatelessWidget {
 
   static const routeName = '/login';
 
-  static Widget build(BuildContext context, {Object? arguments}) {
+  static Widget pageBuilder(BuildContext context, {Object? arguments}) {
     return BlocProvider(
       create: (_) => GetIt.I<LoginCubit>(),
       child: const LoginPage(),

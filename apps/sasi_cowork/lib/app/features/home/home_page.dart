@@ -5,7 +5,7 @@ class HomePage extends StatelessWidget {
 
   static const routeName = '/home';
 
-  static Widget build(BuildContext context, {Object? arguments}) {
+  static Widget pageBuilder(BuildContext context, {Object? arguments}) {
     return const HomePage();
   }
 

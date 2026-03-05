@@ -10,7 +10,7 @@ abstract final class AppTheme {
           brightness: Brightness.light,
         ),
         scaffoldBackgroundColor: AppColors.white,
-        cardTheme: CardTheme(
+        cardTheme: CardThemeData(
           elevation: AppTokens.elevationSm,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppTokens.radiusMd),

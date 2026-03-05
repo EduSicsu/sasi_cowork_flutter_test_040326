@@ -16,7 +16,7 @@ class MfaVerificationPage extends StatelessWidget {
 
   static const routeName = '/mfa-verification';
 
-  static Widget build(BuildContext context, {Object? arguments}) {
+  static Widget pageBuilder(BuildContext context, {Object? arguments}) {
     final args = (arguments as Map<String, dynamic>?) ?? {};
     final mfaType = args['mfaType'] as String? ?? 'email';
     return BlocProvider(
