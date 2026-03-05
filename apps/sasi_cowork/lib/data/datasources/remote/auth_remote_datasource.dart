@@ -32,7 +32,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         'email': email,
         'password': password,
         if (roleId != null) 'roleId': roleId,
-        if (preferredRoleId != null) 'prefferedRoleId': preferredRoleId,
+        if (preferredRoleId != null) 'preferredRoleId': preferredRoleId,
       },
     );
     return AuthModel.fromJson(response.data!);

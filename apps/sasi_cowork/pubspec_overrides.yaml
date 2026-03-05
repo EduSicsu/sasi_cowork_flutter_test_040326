@@ -1,0 +1,6 @@
+# melos_managed_dependency_overrides: sasi_moni_lib,sume_design_system
+dependency_overrides:
+  sasi_moni_lib:
+    path: ../../packages/sasi_moni_lib
+  sume_design_system:
+    path: ../../packages/sume_design_system

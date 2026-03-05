@@ -1,1 +1,1 @@
-export 'package:sume_design_system/src/theme/app_colors.dart';
+export 'package:sume_design_system/sume_design_system.dart' show AppColors;

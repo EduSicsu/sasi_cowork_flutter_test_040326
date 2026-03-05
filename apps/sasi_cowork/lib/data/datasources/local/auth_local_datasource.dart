@@ -1,7 +1,5 @@
 import '../../../infra/storage/secure_storage_adapter.dart';
-
-const _accessTokenKey = 'access_token';
-const _refreshTokenKey = 'refresh_token';
+import '../../../infra/storage/storage_keys.dart';
 
 abstract interface class AuthLocalDataSource {
   Future<void> saveAccessToken(String token);
@@ -18,21 +16,23 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
 
   @override
   Future<void> saveAccessToken(String token) =>
-      _storage.write(key: _accessTokenKey, value: token);
+      _storage.write(key: StorageKeys.accessToken, value: token);
 
   @override
   Future<void> saveRefreshToken(String token) =>
-      _storage.write(key: _refreshTokenKey, value: token);
+      _storage.write(key: StorageKeys.refreshToken, value: token);
 
   @override
-  Future<String?> getAccessToken() => _storage.read(key: _accessTokenKey);
+  Future<String?> getAccessToken() =>
+      _storage.read(key: StorageKeys.accessToken);
 
   @override
-  Future<String?> getRefreshToken() => _storage.read(key: _refreshTokenKey);
+  Future<String?> getRefreshToken() =>
+      _storage.read(key: StorageKeys.refreshToken);
 
   @override
   Future<void> clearTokens() async {
-    await _storage.delete(key: _accessTokenKey);
-    await _storage.delete(key: _refreshTokenKey);
+    await _storage.delete(key: StorageKeys.accessToken);
+    await _storage.delete(key: StorageKeys.refreshToken);
   }
 }

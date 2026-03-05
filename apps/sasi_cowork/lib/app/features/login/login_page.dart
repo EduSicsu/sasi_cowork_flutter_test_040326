@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sume_design_system/sume_design_system.dart';
+import '../home/home_page.dart';
+import '../mfa_verification/mfa_verification_page.dart';
 import 'cubit/cubit.dart';
 import 'widgets/login_form.dart';
 
@@ -71,7 +73,7 @@ class LoginPage extends StatelessWidget {
 
     if (state is LoginMfaRequired) {
       Navigator.of(context).pushReplacementNamed(
-        '/mfa-verification',
+        MfaVerificationPage.routeName,
         arguments: {
           'tempAccessToken': state.tempAccessToken,
           'mfaType': state.mfaType,
@@ -80,7 +82,7 @@ class LoginPage extends StatelessWidget {
     }
 
     if (state is LoginSuccess) {
-      Navigator.of(context).pushReplacementNamed('/home');
+      Navigator.of(context).pushReplacementNamed(HomePage.routeName);
     }
   }
 }

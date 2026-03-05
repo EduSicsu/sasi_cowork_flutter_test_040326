@@ -1,9 +1,8 @@
 import 'package:dio/dio.dart';
 import '../storage/secure_storage_adapter.dart';
+import '../storage/storage_keys.dart';
 
 const _baseUrl = 'https://stg-api-moni.sasi.io';
-const _accessTokenKey = 'access_token';
-const _refreshTokenKey = 'refresh_token';
 
 class DioClient {
   DioClient(this._storage) {
@@ -36,7 +35,7 @@ class _AuthInterceptor extends QueuedInterceptorsWrapper {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
-    final token = await _storage.read(key: _accessTokenKey);
+    final token = await _storage.read(key: StorageKeys.accessToken);
     if (token != null) {
       options.headers['Authorization'] = 'Bearer $token';
     }
@@ -51,7 +50,7 @@ class _AuthInterceptor extends QueuedInterceptorsWrapper {
     if (err.response?.statusCode == 401) {
       final refreshed = await _tryRefresh();
       if (refreshed) {
-        final token = await _storage.read(key: _accessTokenKey);
+        final token = await _storage.read(key: StorageKeys.accessToken);
         final opts = err.requestOptions
           ..headers['Authorization'] = 'Bearer $token';
         try {
@@ -65,7 +64,7 @@ class _AuthInterceptor extends QueuedInterceptorsWrapper {
   }
 
   Future<bool> _tryRefresh() async {
-    final refreshToken = await _storage.read(key: _refreshTokenKey);
+    final refreshToken = await _storage.read(key: StorageKeys.refreshToken);
     if (refreshToken == null) return false;
 
     try {
@@ -76,12 +75,12 @@ class _AuthInterceptor extends QueuedInterceptorsWrapper {
       );
       final data = response.data as Map<String, dynamic>;
       await _storage.write(
-        key: _accessTokenKey,
+        key: StorageKeys.accessToken,
         value: data['accessToken'] as String,
       );
       if (data['refreshToken'] != null) {
         await _storage.write(
-          key: _refreshTokenKey,
+          key: StorageKeys.refreshToken,
           value: data['refreshToken'] as String,
         );
       }
