@@ -29,8 +29,8 @@ class _LoginFormState extends State<LoginForm> {
     final password = _passwordController.text;
 
     setState(() {
-      _emailError = email.isEmpty ? 'Informe o e-mail' : null;
-      _passwordError = password.isEmpty ? 'Informe a senha' : null;
+      _emailError = email.isEmpty ? 'Please enter your email' : null;
+      _passwordError = password.isEmpty ? 'Please enter your password' : null;
     });
 
     return _emailError == null && _passwordError == null;
@@ -50,13 +50,18 @@ class _LoginFormState extends State<LoginForm> {
     final isLoading = context.select(
       (LoginCubit c) => c.state is LoginLoading,
     );
+    final textTheme = Theme.of(context).textTheme;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        Text(
+          'Email',
+          style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: AppTokens.spaceXs),
         MoniTextField(
-          label: 'E-mail',
-          hint: 'seu@email.com',
+          hint: 'Enter email',
           controller: _emailController,
           keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.next,
@@ -71,8 +76,13 @@ class _LoginFormState extends State<LoginForm> {
           },
         ),
         const SizedBox(height: AppTokens.spaceMd),
+        Text(
+          'Password',
+          style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: AppTokens.spaceXs),
         MoniTextField(
-          label: 'Senha',
+          hint: 'Enter password',
           controller: _passwordController,
           obscureText: true,
           textInputAction: TextInputAction.done,
@@ -87,23 +97,50 @@ class _LoginFormState extends State<LoginForm> {
             if (_passwordError != null) setState(() => _passwordError = null);
           },
         ),
-        const SizedBox(height: AppTokens.spaceSm),
-        Align(
-          alignment: Alignment.centerRight,
-          child: MoniButton.textPrimary(
-            label: 'Esqueceu a senha?',
-            size: MoniButtonSize.small,
-            onPressed: () {},
-          ),
-        ),
         const SizedBox(height: AppTokens.spaceXl),
         MoniButton.filled(
-          label: 'Entrar',
+          label: 'Log in',
           size: MoniButtonSize.large,
           isFullWidth: true,
           isLoading: isLoading,
           onPressed: isLoading ? null : _submit,
         ),
+        const SizedBox(height: AppTokens.spaceMd),
+        MoniButton.textPrimary(
+          label: 'Reset password',
+          size: MoniButtonSize.normal,
+          onPressed: () {},
+        ),
+        const SizedBox(height: AppTokens.spaceSm),
+        Center(
+          child: Text.rich(
+            TextSpan(
+              text: "Don't have an account? ",
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: SumePrimitives.gray500,
+                  ),
+              children: [
+                WidgetSpan(
+                  alignment: PlaceholderAlignment.baseline,
+                  baseline: TextBaseline.alphabetic,
+                  child: GestureDetector(
+                    onTap: () {},
+                    child: Text(
+                      'Register',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: SumePrimitives.indigo600,
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline,
+                            decorationColor: SumePrimitives.indigo600,
+                          ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: AppTokens.spaceXxl),
       ],
     );
   }
