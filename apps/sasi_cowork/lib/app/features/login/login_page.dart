@@ -27,6 +27,9 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final ext = Theme.of(context).extension<SumeThemeExtension>()!;
+
     return BlocListener<LoginCubit, LoginState>(
       listener: _handleState,
       child: Scaffold(
@@ -34,25 +37,44 @@ class LoginPage extends StatelessWidget {
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(
               horizontal: AppTokens.spaceLg,
-              vertical: AppTokens.spaceXl,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                const SizedBox(height: AppTokens.space6xl),
+                Center(
+                  child: Container(
+                    width: 72,
+                    height: 72,
+                    decoration: BoxDecoration(
+                      color: cs.primary,
+                      borderRadius:
+                          BorderRadius.circular(AppTokens.radiusXl),
+                    ),
+                    child: Icon(
+                      Icons.account_balance_wallet_outlined,
+                      color: cs.onPrimary,
+                      size: AppTokens.iconXxl,
+                    ),
+                  ),
+                ),
                 const SizedBox(height: AppTokens.spaceXxl),
                 Text(
-                  'Bem-vindo',
-                  style: Theme.of(context).textTheme.displayLarge,
+                  'Bem-vindo ao Moni',
+                  style: Theme.of(context).textTheme.headlineMedium,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: AppTokens.spaceSm),
                 Text(
                   'Faça login para continuar',
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: ext.textSubtitle,
+                      ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: AppTokens.spaceXxl),
+                const SizedBox(height: AppTokens.space3xl),
                 const LoginForm(),
+                const SizedBox(height: AppTokens.spaceXxl),
               ],
             ),
           ),
@@ -66,7 +88,7 @@ class LoginPage extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(state.message),
-          backgroundColor: AppColors.error,
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
     }

@@ -1,0 +1,32 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "sasi_cowork (debug)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "cwd": "${workspaceFolder}/apps/sasi_cowork",
+      "flutterMode": "debug",
+      "args": []
+    },
+    {
+      "name": "sasi_cowork (profile)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "cwd": "${workspaceFolder}/apps/sasi_cowork",
+      "flutterMode": "profile",
+      "args": []
+    },
+    {
+      "name": "sasi_cowork (release)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "cwd": "${workspaceFolder}/apps/sasi_cowork",
+      "flutterMode": "release",
+      "args": []
+    }
+  ]
+}
