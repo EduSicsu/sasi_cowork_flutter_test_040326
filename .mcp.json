@@ -5,8 +5,8 @@
       "args": [
         "-y",
         "figma-developer-mcp",
-        "--figma-api-key",
-        "${FIGMA_API_KEY}"
+        "--env",
+        "/Users/eduardooliveiralopes/sasi_cowork_flutter_test_040326/.env"
       ]
     }
   }
