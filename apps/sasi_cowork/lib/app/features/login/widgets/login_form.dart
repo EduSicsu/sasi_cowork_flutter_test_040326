@@ -106,10 +106,17 @@ class _LoginFormState extends State<LoginForm> {
           onPressed: isLoading ? null : _submit,
         ),
         const SizedBox(height: AppTokens.spaceMd),
-        MoniButton.textPrimary(
-          label: 'Reset password',
-          size: MoniButtonSize.normal,
-          onPressed: () {},
+        Center(
+          child: GestureDetector(
+            onTap: () {},
+            child: Text(
+              'Reset password',
+              style: textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
         ),
         const SizedBox(height: AppTokens.spaceSm),
         Center(
