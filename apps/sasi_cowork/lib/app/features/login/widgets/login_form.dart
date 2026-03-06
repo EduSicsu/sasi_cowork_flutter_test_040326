@@ -124,7 +124,7 @@ class _LoginFormState extends State<LoginForm> {
             TextSpan(
               text: "Don't have an account? ",
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: SumePrimitives.gray500,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
               children: [
                 WidgetSpan(
@@ -135,10 +135,10 @@ class _LoginFormState extends State<LoginForm> {
                     child: Text(
                       'Register',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: SumePrimitives.indigo600,
+                            color: Theme.of(context).colorScheme.primary,
                             fontWeight: FontWeight.bold,
                             decoration: TextDecoration.underline,
-                            decorationColor: SumePrimitives.indigo600,
+                            decorationColor: Theme.of(context).colorScheme.primary,
                           ),
                     ),
                   ),

@@ -30,8 +30,7 @@ class LoginPage extends StatelessWidget {
     return BlocListener<LoginCubit, LoginState>(
       listener: _handleState,
       child: const Scaffold(
-        backgroundColor: SumePrimitives.indigo10,
-        body: const _LoginBody(),
+        body: _LoginBody(),
       ),
     );
   }
@@ -83,15 +82,15 @@ class _LoginBody extends StatelessWidget {
                 fit: BoxFit.cover,
                 alignment: Alignment.topCenter,
               ),
-              const DecoratedBox(
+              DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    stops: [0.0, 0.74],
+                    stops: const [0.0, 0.74],
                     colors: [
-                      Color(0x00F4F5FF),
-                      Color(0xFFF4F5FF),
+                      const Color(0x00000000),
+                      Theme.of(context).colorScheme.surfaceContainerLowest,
                     ],
                   ),
                 ),
@@ -125,7 +124,7 @@ class _LoginBody extends StatelessWidget {
                 Text(
                   'Keep up to date with messages and alerts.',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: SumePrimitives.gray500,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                 ),
                 const SizedBox(height: AppTokens.spaceXxl),
